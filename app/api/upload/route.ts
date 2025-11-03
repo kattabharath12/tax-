@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth-options';
-import { prisma } from '@/lib/db';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { uploadFile } from '@/lib/file-storage';
 
 export async function POST(request: NextRequest) {
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const fileName = await uploadFile(buffer, file.name, file.type);
+    const storedFileName = await uploadFile(buffer, file.name, file.type);
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -39,10 +39,12 @@ export async function POST(request: NextRequest) {
 
     const document = await prisma.document.create({
       data: {
-        fileName,
-        fileUrl: fileName,
+        fileName: storedFileName,
+        originalFileName: file.name,
         fileType: file.type,
-        type: type || 'OTHER',
+        fileSize: file.size,
+        cloudStoragePath: storedFileName,
+        documentType: type || 'OTHER',
         userId: user!.id,
       },
     });
