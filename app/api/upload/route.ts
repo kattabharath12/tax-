@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to local storage
     const buffer = Buffer.from(await file.arrayBuffer());
-    const cloudStoragePath = await uploadFile(buffer, file.name);
+    const cloudStoragePath = await uploadFile(buffer, file.name, file.type);
 
     // Save document info to database
     const document = await prisma.document.create({
