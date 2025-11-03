@@ -1,18 +1,24 @@
+# Nixpacks configuration for Railway deployment
+# This configuration ensures database migrations run at startup (runtime)
+# instead of during build time
+
 [phases.setup]
-nixPkgs = ["nodejs_20", "openssl"]
+nixPkgs = ["nodejs_20", "openssl", "bash"]
 
 [phases.install]
 cmds = ["npm install"]
 
 [phases.build]
+# Only build the application during build phase
+# Do NOT run migrations here as database is not accessible during build
 cmds = [
   "npx prisma generate",
-  "npm run build",
-  "mkdir -p /app/uploads"
+  "npm run build"
 ]
 
 [start]
-cmd = "npm start"
+# Use the custom start script that runs migrations at runtime
+cmd = "bash start-with-migrate.sh"
 
 [env]
 UPLOAD_DIR = "/app/uploads"
