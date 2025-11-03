@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "openssl"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = [
+  "npx prisma generate",
+  "npm run build",
+  "mkdir -p /app/uploads"
+]
+
+[start]
+cmd = "npm start"
+
+[env]
+UPLOAD_DIR = "/app/uploads"
