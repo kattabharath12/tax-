@@ -6,7 +6,7 @@ import { createS3Client, getBucketConfig } from "./aws-config";
 const s3Client = createS3Client();
 const { bucketName, folderPrefix } = getBucketConfig();
 
-export async function uploadFile(buffer: Buffer, fileName: string): Promise<string> {
+export async function uploadFile(buffer: Buffer, fileName: string, contentType: string): Promise<string> {
   try {
     const key = `${folderPrefix}uploads/${Date.now()}-${fileName}`;
     
@@ -14,7 +14,7 @@ export async function uploadFile(buffer: Buffer, fileName: string): Promise<stri
       Bucket: bucketName,
       Key: key,
       Body: buffer,
-      ContentType: getContentType(fileName),
+      ContentType: contentType || getContentType(fileName), // Use provided contentType or fallback to derived
     });
     
     await s3Client.send(command);
