@@ -12,6 +12,7 @@ cmds = ["npm install"]
 # Only build the application during build phase
 # Do NOT run migrations here as database is not accessible during build
 cmds = [
+  "mkdir -p .next/cache",
   "npx prisma generate",
   "npm run build"
 ]
